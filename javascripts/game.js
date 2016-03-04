@@ -74,10 +74,11 @@ Game.validate = function(moveObj) {
 };
 
 Game.isGameOver = function(whoseTurn){
+  console.log("doing isGameOver for player",whoseTurn);
   var row, col;
 
   for (row = 0; row < 8; row++) {
-    for (col = 0; col < 7; col++ ) {
+    for (col = 0; col < 8; col++ ) {
       if (Math.abs(Game.matrix[row][col]) !== whoseTurn) {
         continue;  // next column
       }
@@ -88,6 +89,8 @@ Game.isGameOver = function(whoseTurn){
       // . E . F .
       // G . . . H
       var analyze = {};
+      analyze.x = Game.matrix[row][col];
+
       try {
         analyze.a = Math.abs(Game.matrix[row - 1][col - 1]);
       }
@@ -142,16 +145,17 @@ console.log("analyze",analyze);
       let canMove = true;
       switch(analyze.x) {
         case 1:
-          canMove = AllowableMoves.p1Ordinary();
+          canMove = AllowableMoves.p1Ordinary(analyze);
+          console.log("canMove",canMove);
           break;
         case -1:
-          canMove = AllowableMoves.p1Ordinary() || AllowableMoves.p1King();
+          canMove = AllowableMoves.p1Ordinary(analyze) || AllowableMoves.p1King(analyze);
           break;
         case 2:
-          canMove = AllowableMoves.p2Ordinary();
+          canMove = AllowableMoves.p2Ordinary(analyze);
           break;
         case -2:
-          canMove = AllowableMoves.p2Ordinary() || AllowableMoves.p2King();
+          canMove = AllowableMoves.p2Ordinary(analyze) || AllowableMoves.p2King(analyze);
           break;
       }
       if (canMove) {

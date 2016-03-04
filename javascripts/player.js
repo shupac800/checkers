@@ -46,6 +46,7 @@ let Player = {
       Player.assignListeners(Player.whoseTurn);
       $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
     } else {
+      console.log("ending with whoseTurn =",Player.whoseTurn);
       $("#whoseTurn").html("Game Over!");
     }
   }

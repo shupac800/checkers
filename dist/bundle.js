@@ -4,19 +4,19 @@
 "use strict";
 
 let AllowableMoves = {};
-let analyze = {};
 
-AllowableMoves.p1Ordinary = function() {
+AllowableMoves.p1Ordinary = function(analyze) {
   if ( (analyze.a === 0) ||                               // p1 forward move to A
        (analyze.b === 0) ||                               // p1 forward move to B
        ( (analyze.a === 2) && (analyze.c === 0) ) ||      // p1 forward jump to C
        ( (analyze.b === 2) && (analyze.d === 0) ) ) {     // p1 forward jump to D
+    console.log("goddamn it's true!");
     return true;  // moves are available for this piece
   } else {
     return false; // no moves available for this piece
   }
 };
-AllowableMoves.p1King = function() {
+AllowableMoves.p1King = function(analyze) {
   if ( (analyze.e === 0) ||                               // p1 backward move to E
        (analyze.f === 0) ||                               // p1 backward move to F
        ( (analyze.e === 2) && (analyze.g === 0) ) ||      // p1 backward jump to G
@@ -26,7 +26,7 @@ AllowableMoves.p1King = function() {
     return false; // no moves available for this piece
   }
 };
-AllowableMoves.p2Ordinary = function() {
+AllowableMoves.p2Ordinary = function(analyze) {
   if ( (analyze.e === 0) ||                               // p2 forward move to E
        (analyze.f === 0) ||                               // p2 forward move to F
        ( (analyze.e === 1) && (analyze.g === 0) ) ||      // p2 forward jump to G
@@ -36,7 +36,7 @@ AllowableMoves.p2Ordinary = function() {
     return false; // no moves available for this piece
   }
 };
-AllowableMoves.p2King = function() {
+AllowableMoves.p2King = function(analyze) {
   if ( (analyze.a === 0) ||                               // p2 backward move to A
        (analyze.b === 0) ||                               // p2 backward move to B
        ( (analyze.a === 1) && (analyze.c === 0) ) ||      // p2 backward jump to C
@@ -149,10 +149,11 @@ Game.validate = function(moveObj) {
 };
 
 Game.isGameOver = function(whoseTurn){
+  console.log("doing isGameOver for player",whoseTurn);
   var row, col;
 
   for (row = 0; row < 8; row++) {
-    for (col = 0; col < 7; col++ ) {
+    for (col = 0; col < 8; col++ ) {
       if (Math.abs(Game.matrix[row][col]) !== whoseTurn) {
         continue;  // next column
       }
@@ -163,6 +164,8 @@ Game.isGameOver = function(whoseTurn){
       // . E . F .
       // G . . . H
       var analyze = {};
+      analyze.x = Game.matrix[row][col];
+
       try {
         analyze.a = Math.abs(Game.matrix[row - 1][col - 1]);
       }
@@ -217,16 +220,17 @@ console.log("analyze",analyze);
       let canMove = true;
       switch(analyze.x) {
         case 1:
-          canMove = AllowableMoves.p1Ordinary();
+          canMove = AllowableMoves.p1Ordinary(analyze);
+          console.log("canMove",canMove);
           break;
         case -1:
-          canMove = AllowableMoves.p1Ordinary() || AllowableMoves.p1King();
+          canMove = AllowableMoves.p1Ordinary(analyze) || AllowableMoves.p1King(analyze);
           break;
         case 2:
-          canMove = AllowableMoves.p2Ordinary();
+          canMove = AllowableMoves.p2Ordinary(analyze);
           break;
         case -2:
-          canMove = AllowableMoves.p2Ordinary() || AllowableMoves.p2King();
+          canMove = AllowableMoves.p2Ordinary(analyze) || AllowableMoves.p2King(analyze);
           break;
       }
       if (canMove) {
@@ -299,6 +303,7 @@ let Player = {
       Player.assignListeners(Player.whoseTurn);
       $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
     } else {
+      console.log("ending with whoseTurn =",Player.whoseTurn);
       $("#whoseTurn").html("Game Over!");
     }
   }
