@@ -39,6 +39,12 @@ Game.doMove = function(moveObj) {
     // move player piece
     Game.matrix[moveObj.oRow][moveObj.oCol] = 0;
     Game.matrix[moveObj.dRow][moveObj.dCol] = moveObj.player;
+    //  more jumps available?
+    var moreJumpsAvailable = false;
+    switch(moveObj.player) {
+      case 1:
+        moreJumpsAvailable = AllowableMoves.p1OrdinaryCanJump(Game.matrix);
+    }
     // return with exit code = success
     return 0;
   }
@@ -74,7 +80,6 @@ Game.validate = function(moveObj) {
 };
 
 Game.isGameOver = function(whoseTurn){
-  console.log("doing isGameOver for player",whoseTurn);
   var row, col;
 
   for (row = 0; row < 8; row++) {
@@ -82,71 +87,12 @@ Game.isGameOver = function(whoseTurn){
       if (Math.abs(Game.matrix[row][col]) !== whoseTurn) {
         continue;  // next column
       }
-      // construct 5x5 matrix around piece being analyzed, "X"
-      // C . . . D
-      // . A . B .
-      // . . X . .
-      // . E . F .
-      // G . . . H
-      var analyze = {};
-      analyze.x = Game.matrix[row][col];
+      var analyze = AllowableMoves.buildAnalyzeMatrix(Game.matrix,row,col);
 
-      try {
-        analyze.a = Math.abs(Game.matrix[row - 1][col - 1]);
-      }
-      catch(e){
-        analyze.a = 9;  // position is off the board
-      }
-      try {
-        analyze.b = Math.abs(Game.matrix[row - 1][col + 1]);
-      }
-      catch(e){
-        analyze.b = 9;  // position is off the board
-      }
-      try {
-        analyze.c = Math.abs(Game.matrix[row - 2][col - 2]);
-      }
-      catch(e){
-        analyze.c = 9;  // position is off the board
-      }
-      try {
-        analyze.d = Math.abs(Game.matrix[row - 2][col + 2]);
-      }
-      catch(e){
-        analyze.d = 9;  // position is off the board
-      }
-      try {
-        analyze.e = Math.abs(Game.matrix[row + 1][col - 1]);
-      }
-      catch(e){
-        analyze.e = 9;  // position is off the board
-      }
-      try {
-        analyze.f = Math.abs(Game.matrix[row + 1][col + 1]);
-      }
-      catch(e){
-        analyze.f = 9;  // position is off the board
-      }
-      try {
-        analyze.g = Math.abs(Game.matrix[row + 2][col - 2]);
-      }
-      catch(e){
-        analyze.g = 9;  // position is off the board
-      }
-      try {
-        analyze.g = Math.abs(Game.matrix[row + 2][col + 2]);
-      }
-      catch(e){
-        analyze.g = 9;  // position is off the board
-      }
-
-console.log("row,col",row,col);
-console.log("analyze",analyze);
       let canMove = true;
       switch(analyze.x) {
         case 1:
           canMove = AllowableMoves.p1Ordinary(analyze);
-          console.log("canMove",canMove);
           break;
         case -1:
           canMove = AllowableMoves.p1Ordinary(analyze) || AllowableMoves.p1King(analyze);

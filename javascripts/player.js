@@ -15,7 +15,6 @@ let Player = {
       moveObj.oRow = parseInt(event.target.className.charAt(3));
       moveObj.oCol = parseInt(event.target.className.charAt(8));
       moveObj.player = Player.whoseTurn;
-      console.log("mousedown",moveObj);
       return false;
     });
 
@@ -23,7 +22,6 @@ let Player = {
     $(`.p${Player.whoseTurn * -1}`).on("mousedown",function(event){  // note: dynamically-created DOM element
       moveObj.oRow = parseInt(event.target.className.charAt(3));
       moveObj.oCol = parseInt(event.target.className.charAt(8));
-      console.log("mousedown",moveObj);
       moveObj.player = Player.whoseTurn * -1;
       return false;
     });
@@ -31,7 +29,6 @@ let Player = {
     $(".p0").on("mouseup",function(event){
       moveObj.dRow = parseInt(event.target.className.charAt(3));
       moveObj.dCol = parseInt(event.target.className.charAt(8));
-      console.log("mouseup",moveObj);
       let exit_code = Game.doMove(moveObj);
       if (exit_code === 0) { // move was valid
         Player.whoseTurn = Player.whoseTurn === 1 ? 2 : 1;  // switch players
@@ -46,7 +43,6 @@ let Player = {
       Player.assignListeners(Player.whoseTurn);
       $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
     } else {
-      console.log("ending with whoseTurn =",Player.whoseTurn);
       $("#whoseTurn").html("Game Over!");
     }
   }
