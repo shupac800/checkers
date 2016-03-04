@@ -9,12 +9,22 @@ let Player = {
   whoseTurn: 1,  // player 1 goes first
   assignListeners: function() {
     var moveObj = {};  // re-initialize moveObj
-    moveObj.player = Player.whoseTurn;
 
+    // ordinary pieces
     $(`.p${Player.whoseTurn}`).on("mousedown",function(event){  // note: dynamically-created DOM element
       moveObj.oRow = parseInt(event.target.className.charAt(3));
       moveObj.oCol = parseInt(event.target.className.charAt(8));
+      moveObj.player = Player.whoseTurn;
       console.log("mousedown",moveObj);
+      return false;
+    });
+
+    // kings
+    $(`.p${Player.whoseTurn + 2}`).on("mousedown",function(event){  // note: dynamically-created DOM element
+      moveObj.oRow = parseInt(event.target.className.charAt(3));
+      moveObj.oCol = parseInt(event.target.className.charAt(8));
+      console.log("mousedown",moveObj);
+      moveObj.player = Player.whoseTurn + 2;
       return false;
     });
 
