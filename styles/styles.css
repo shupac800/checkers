@@ -1,0 +1,37 @@
+/* styles.css */
+
+body {
+  position: relative;
+}
+
+.row0 {position: absolute; float: left; top: 0}
+.row1 {position: absolute; float: left; top: 50}
+.row2 {position: absolute; float: left; top: 100}
+.row3 {position: absolute; float: left; top: 150}
+.row4 {position: absolute; float: left; top: 200}
+.row5 {position: absolute; float: left; top: 250}
+.row6 {position: absolute; float: left; top: 300}
+.row7 {position: absolute; float: left; top: 350}
+
+.col0 {position: absolute; float: left; left: 0}
+.col1 {position: absolute; float: left; left: 50}
+.col2 {position: absolute; float: left; left: 100}
+.col3 {position: absolute; float: left; left: 150}
+.col4 {position: absolute; float: left; left: 200}
+.col5 {position: absolute; float: left; left: 250}
+.col6 {position: absolute; float: left; left: 300}
+.col7 {position: absolute; float: left; left: 350}
+
+#whoseTurn {
+  position: absolute;
+  left: 20;
+  top: 420;
+  font-size: 2.2em;
+}
+
+#error {
+  position: absolute;
+  left: 20;
+  top: 520;
+  font-size: 2.2em;
+}
