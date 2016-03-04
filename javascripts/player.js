@@ -20,11 +20,11 @@ let Player = {
     });
 
     // kings
-    $(`.p${Player.whoseTurn + 2}`).on("mousedown",function(event){  // note: dynamically-created DOM element
+    $(`.p${Player.whoseTurn * -1}`).on("mousedown",function(event){  // note: dynamically-created DOM element
       moveObj.oRow = parseInt(event.target.className.charAt(3));
       moveObj.oCol = parseInt(event.target.className.charAt(8));
       console.log("mousedown",moveObj);
-      moveObj.player = Player.whoseTurn + 2;
+      moveObj.player = Player.whoseTurn * -1;
       return false;
     });
 
@@ -41,8 +41,13 @@ let Player = {
   },
   go: function() {
     Display.drawBoard();
-    Player.assignListeners(Player.whoseTurn);
-    $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
+    // check for game over:  current player has > 0 pieces and has valid moves?
+    if (!Game.isGameOver(Player.whoseTurn)) {
+      Player.assignListeners(Player.whoseTurn);
+      $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
+    } else {
+      $("#whoseTurn").html("Game Over!");
+    }
   }
 };
 
