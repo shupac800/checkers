@@ -25,13 +25,19 @@ body {
 #whoseTurn {
   position: absolute;
   left: 20;
+  top: 470;
+  font-size: 2.2em;
+}
+
+#msg {
+  position: absolute;
+  left: 20;
   top: 420;
   font-size: 2.2em;
 }
 
-#error {
+#playAgain {
   position: absolute;
-  left: 20;
-  top: 520;
-  font-size: 2.2em;
+  left: 275;
+  top: 470;
 }
