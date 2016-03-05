@@ -13,8 +13,6 @@ AllowableMoves.buildAnalyzeGrid = function(matrix,row,col) {
   // . E . F .
   // G . . . H
   var analyze = {};
-  console.log(matrix);
-  console.log(row,col);
   analyze.x = matrix[row][col];
 
   try {
@@ -182,7 +180,7 @@ let Game = {
 //                     [0,1,0,2,0,1,0,1],
 //                     [1,0,1,0,0,0,1,0]]
 // };
-  newMatrix:       [[0,0,0,0,0,0,0,0], // game over b/c no moves for P2
+  newMatrix:       [[0,0,0,0,0,0,0,0], // for testing
                     [0,0,0,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,2,0,2,0,0,0],
@@ -195,11 +193,10 @@ let Game = {
 Game.doMove = function(moveObj) {
   // first, validate that moveObj defines a valid move
   let message = Game.validate(moveObj);
-  console.log("msg",message);
   $("#msg").html(message);
 
   if (message.indexOf("OK") >= 0) {  // move is valid
-    // is this piece getting promoted to king?
+    // is this piece getting crowned?
     if ((moveObj.player === 1) && (moveObj.dRow === 0)) {
       moveObj.player = -1; // king player 1!
     }
@@ -209,10 +206,16 @@ Game.doMove = function(moveObj) {
     // move player piece
     Game.matrix[moveObj.oRow][moveObj.oCol] = 0;
     Game.matrix[moveObj.dRow][moveObj.dCol] = moveObj.player;
-    // return with exit code = success
-    return 0;
+    // if this was a jump move, see if another jump is possible
+    if (message.indexOf("Jump OK") >= 0) {
+      if (Game.moreJumpsAvailable(moveObj.dRow,moveObj.dCol)) {
+        $("#msg").html(`Player ${Math.abs(moveObj.player)} keep jumpin'!`);
+        return 1;  // exit code = valid move; don't switch players
+      }
+    }
+    return 0;  // exit code = valid move; switch players
   }
-  return -1;
+  return -1;  // exit code = invalid move
 };
 
 Game.validate = function(moveObj) {
@@ -224,15 +227,15 @@ Game.validate = function(moveObj) {
     var otherPlayer = Math.abs(moveObj.player) === 1 ? 2 : 1;
     if (Math.abs(Game.matrix[jumpRow][jumpCol]) === otherPlayer) {
       Game.matrix[jumpRow][jumpCol] = 0;  // remove jumped piece from board
-      return "jump OK!";
+      return "Jump OK!";
     } else {
-      return "nothing to jump!";
+      return "Nothing to jump!";
     }
   }
   // backward move by ordinary piece? only kings can move backward.
   if (((moveObj.player === 1) && (moveObj.dRow > moveObj.oRow ) ) ||
       ((moveObj.player === 2) && (moveObj.dRow < moveObj.oRow ) ) ) {
-    return "this piece can only move forward";
+    return "This piece can only move forward";
   }
   // ordinary move?
   if ((Math.abs(moveObj.oRow - moveObj.dRow) === 1) && 
@@ -240,7 +243,7 @@ Game.validate = function(moveObj) {
     return "OK";
   }
   // if move is not expressly permitted, it's forbidden
-  return "unspecified error";
+  return "Unspecified error";
 };
 
 Game.moreJumpsAvailable = function(row,col) {
@@ -292,8 +295,7 @@ Game.isGameOver = function(whoseTurn) {
   }  // end for row
   // if we get to this point without returning,
   // this player either has zero pieces or has no moves available
-  // meaning, game is over
-  return true;
+  return true;        // return "game over"
 };
 
 module.exports = Game;
@@ -340,16 +342,13 @@ let Player = {
       moveObj.dRow = parseInt(event.target.className.charAt(3));
       moveObj.dCol = parseInt(event.target.className.charAt(8));
       let exit_code = Game.doMove(moveObj);
-      if (exit_code === 0) { // move was valid
-        if (Game.moreJumpsAvailable(moveObj.dRow,moveObj.dCol)) {
-          $("#msg").html(`Player ${Player.whoseTurn} keep jumpin'!`);
-        } else {
-          Player.whoseTurn = Player.whoseTurn === 1 ? 2 : 1;  // switch players
-        }
+      if (exit_code === 0) {
+        Player.whoseTurn = Player.whoseTurn === 1 ? 2 : 1;  // switch players
       }
       Player.go();
     });
   },
+
   go: function() {
     Display.drawBoard();
     // check for game over:  current player has > 0 pieces and has valid moves?

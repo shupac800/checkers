@@ -12,8 +12,6 @@ AllowableMoves.buildAnalyzeGrid = function(matrix,row,col) {
   // . E . F .
   // G . . . H
   var analyze = {};
-  console.log(matrix);
-  console.log(row,col);
   analyze.x = matrix[row][col];
 
   try {
