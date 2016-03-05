@@ -3,27 +3,21 @@
 //let Player = require('./player.js');  // for some reason we crash if Player is required here
 let AllowableMoves = require('./allowablemoves.js');
 
-let Game = {
-//   newMatrix:       [[0,0,0,2,0,2,0,2],
-//                     [2,0,1,0,2,0,2,0],
-//                     [0,2,0,2,0,2,0,2],
-//                     [0,0,0,0,0,0,0,0],
-//                     [0,0,0,0,0,0,0,0],
-//                     [1,0,1,0,1,0,1,0],
-//                     [0,1,0,2,0,1,0,1],
-//                     [1,0,1,0,0,0,1,0]]
-// };
-  newMatrix:       [[0,0,0,0,0,0,0,0], // for testing
+let Game = {};
+
+Game.resetBoard = function() {
+  Game.matrix =   [ [0,0,0,0,0,0,0,0],
                     [0,0,0,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,2,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [1,0,2,0,1,0,1,0],
                     [0,1,0,-1,0,1,0,1],
-                    [1,0,1,0,1,0,1,0]]
+                    [1,0,1,0,1,0,1,0] ];
 };
 
 Game.doMove = function(moveObj) {
+  console.log("newMatrix",Game.newMatrix);
   // first, validate that moveObj defines a valid move
   let message = Game.validate(moveObj);
   $("#msg").html(message);
@@ -42,7 +36,7 @@ Game.doMove = function(moveObj) {
     // if this was a jump move, see if another jump is possible
     if (message.indexOf("Jump OK") >= 0) {
       if (Game.moreJumpsAvailable(moveObj.dRow,moveObj.dCol)) {
-        $("#msg").html(`Player ${Math.abs(moveObj.player)} keep jumpin'!`);
+        $("#msg").html("Keep jumpin'!");
         return 1;  // exit code = valid move; don't switch players
       }
     }

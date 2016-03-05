@@ -7,9 +7,9 @@ var Game = require('./game.js');
 var Display = {};
 var moveObj = {};
 
-Display.drawBoard = function(){
-  var row, col;
-  var htmlString = "";
+Display.drawBoard = function() {
+  let row, col;
+  let htmlString = "";
   for (row = 0; row < 8; row++) {
     for (col = 0; col < 8; col++) {
       let squareColor = (row + col) % 2 === 0 ? "#DDD" : "black";

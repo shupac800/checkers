@@ -150,9 +150,9 @@ var Game = require('./game.js');
 var Display = {};
 var moveObj = {};
 
-Display.drawBoard = function(){
-  var row, col;
-  var htmlString = "";
+Display.drawBoard = function() {
+  let row, col;
+  let htmlString = "";
   for (row = 0; row < 8; row++) {
     for (col = 0; col < 8; col++) {
       let squareColor = (row + col) % 2 === 0 ? "#DDD" : "black";
@@ -170,27 +170,21 @@ module.exports = Display;
 //let Player = require('./player.js');  // for some reason we crash if Player is required here
 let AllowableMoves = require('./allowablemoves.js');
 
-let Game = {
-//   newMatrix:       [[0,0,0,2,0,2,0,2],
-//                     [2,0,1,0,2,0,2,0],
-//                     [0,2,0,2,0,2,0,2],
-//                     [0,0,0,0,0,0,0,0],
-//                     [0,0,0,0,0,0,0,0],
-//                     [1,0,1,0,1,0,1,0],
-//                     [0,1,0,2,0,1,0,1],
-//                     [1,0,1,0,0,0,1,0]]
-// };
-  newMatrix:       [[0,0,0,0,0,0,0,0], // for testing
+let Game = {};
+
+Game.resetBoard = function() {
+  Game.matrix =   [ [0,0,0,0,0,0,0,0],
                     [0,0,0,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,2,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [1,0,2,0,1,0,1,0],
                     [0,1,0,-1,0,1,0,1],
-                    [1,0,1,0,1,0,1,0]]
+                    [1,0,1,0,1,0,1,0] ];
 };
 
 Game.doMove = function(moveObj) {
+  console.log("newMatrix",Game.newMatrix);
   // first, validate that moveObj defines a valid move
   let message = Game.validate(moveObj);
   $("#msg").html(message);
@@ -209,7 +203,7 @@ Game.doMove = function(moveObj) {
     // if this was a jump move, see if another jump is possible
     if (message.indexOf("Jump OK") >= 0) {
       if (Game.moreJumpsAvailable(moveObj.dRow,moveObj.dCol)) {
-        $("#msg").html(`Player ${Math.abs(moveObj.player)} keep jumpin'!`);
+        $("#msg").html("Keep jumpin'!");
         return 1;  // exit code = valid move; don't switch players
       }
     }
@@ -306,8 +300,8 @@ let Game = require('./game.js');
 let Player = require('./player.js');
 //let Display = require('./display.js');
 
-Game.matrix = Game.newMatrix;
-
+$("#playAgain").hide();
+Game.resetBoard();
 Player.go();
 },{"./game.js":3,"./player.js":5}],5:[function(require,module,exports){
 // player.js
@@ -323,7 +317,7 @@ let Player = {
     var moveObj = {};  // re-initialize moveObj
 
     // ordinary pieces
-    $(`.p${Player.whoseTurn}`).on("mousedown",function(event){  // note: dynamically-created DOM element
+    $(`.p${Player.whoseTurn}`).on("mousedown",function(event) {  // note: dynamically-created DOM element
       moveObj.oRow = parseInt(event.target.className.charAt(3));
       moveObj.oCol = parseInt(event.target.className.charAt(8));
       moveObj.player = Player.whoseTurn;
@@ -331,14 +325,14 @@ let Player = {
     });
 
     // kings
-    $(`.p${Player.whoseTurn * -1}`).on("mousedown",function(event){  // note: dynamically-created DOM element
+    $(`.p${Player.whoseTurn * -1}`).on("mousedown",function(event) {  // note: dynamically-created DOM element
       moveObj.oRow = parseInt(event.target.className.charAt(3));
       moveObj.oCol = parseInt(event.target.className.charAt(8));
       moveObj.player = Player.whoseTurn * -1;
       return false;
     });
 
-    $(".p0").on("mouseup",function(event){
+    $(".p0").on("mouseup",function(event) {
       moveObj.dRow = parseInt(event.target.className.charAt(3));
       moveObj.dCol = parseInt(event.target.className.charAt(8));
       let exit_code = Game.doMove(moveObj);
@@ -353,7 +347,16 @@ let Player = {
     Display.drawBoard();
     // check for game over:  current player has > 0 pieces and has valid moves?
     if (Game.isGameOver(Player.whoseTurn)) {
-      $("#whoseTurn").html("Game Over!");
+      let otherPlayer = Player.whoseTurn === 1 ? 2 : 1;
+      $("#whoseTurn").html(`Player ${otherPlayer} wins!`);
+      $("#playAgain").show();
+      $("#playAgain").click(function() {
+        $("#msg").html("");
+        $("#playAgain").hide();
+        Game.resetBoard();
+        Player.whoseTurn = 1;
+        Player.go();
+      });
     } else {
       Player.assignListeners(Player.whoseTurn);
       $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
