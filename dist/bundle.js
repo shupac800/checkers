@@ -5,8 +5,8 @@
 
 let AllowableMoves = {};
 
-AllowableMoves.buildAnalyzeMatrix = function(matrix,row,col) {
-  // construct 5x5 matrix around piece being analyzed, "X"
+AllowableMoves.buildAnalyzeGrid = function(matrix,row,col) {
+  // construct 5x5 grid around piece being analyzed, "X"
   // C . . . D
   // . A . B .
   // . . X . .
@@ -112,33 +112,33 @@ AllowableMoves.p1OrdinaryCanJump = function(analyze) {
   if ( ( (analyze.a === 2) && (analyze.c === 0) ) ||      // p1 forward jump to C
        ( (analyze.b === 2) && (analyze.d === 0) ) ) {     // p1 forward jump to D
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 AllowableMoves.p1KingCanJump = function(analyze) {
   if ( ( (analyze.e === 2) && (analyze.g === 0) ) ||      // p1 backward jump to G
        ( (analyze.f === 2) && (analyze.h === 0) ) ) {     // p1 backward jump to H
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 AllowableMoves.p2OrdinaryCanJump = function(analyze) {
   if ( ( (analyze.e === 1) && (analyze.g === 0) ) ||      // p2 forward jump to G
        ( (analyze.f === 1) && (analyze.h === 0) ) ) {     // p2 forward jump to H
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 AllowableMoves.p2KingCanJump = function(analyze) {
   if ( ( (analyze.a === 1) && (analyze.c === 0) ) ||      // p2 backward jump to C
        ( (analyze.b === 1) && (analyze.d === 0) ) ) {     // p2 backward jump to D
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 
 module.exports = AllowableMoves;
@@ -182,22 +182,23 @@ let Game = {
 //                     [0,1,0,2,0,1,0,1],
 //                     [1,0,1,0,0,0,1,0]]
 // };
-  newMatrix:       [[0,0,0,0,0,0,0,2], // game over b/c no moves for P2
+  newMatrix:       [[0,0,0,0,0,0,0,0], // game over b/c no moves for P2
+                    [0,0,0,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,1,0,0],
+                    [0,0,2,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [1,0,1,0,1,0,1,0],
-                    [0,1,0,1,0,1,0,1],
+                    [1,0,2,0,1,0,1,0],
+                    [0,1,0,-1,0,1,0,1],
                     [1,0,1,0,1,0,1,0]]
 };
 
 Game.doMove = function(moveObj) {
   // first, validate that moveObj defines a valid move
-  let error = Game.validate(moveObj);
-  $("#error").html(error);
+  let message = Game.validate(moveObj);
+  console.log("msg",message);
+  $("#msg").html(message);
 
-  if (error.indexOf("OK") >= 0) {  // move is valid
+  if (message.indexOf("OK") >= 0) {  // move is valid
     // is this piece getting promoted to king?
     if ((moveObj.player === 1) && (moveObj.dRow === 0)) {
       moveObj.player = -1; // king player 1!
@@ -208,12 +209,6 @@ Game.doMove = function(moveObj) {
     // move player piece
     Game.matrix[moveObj.oRow][moveObj.oCol] = 0;
     Game.matrix[moveObj.dRow][moveObj.dCol] = moveObj.player;
-    //  more jumps available?
-    var moreJumpsAvailable = false;
-    switch(moveObj.player) {
-      case 1:
-        moreJumpsAvailable = AllowableMoves.p1OrdinaryCanJump(Game.matrix);
-    }
     // return with exit code = success
     return 0;
   }
@@ -248,15 +243,30 @@ Game.validate = function(moveObj) {
   return "unspecified error";
 };
 
-Game.isGameOver = function(whoseTurn){
-  var row, col;
+Game.moreJumpsAvailable = function(row,col) {
+  let analyze = AllowableMoves.buildAnalyzeGrid(Game.matrix,row,col);
+  switch(analyze.x) {
+    case 1:
+      return AllowableMoves.p1OrdinaryCanJump(analyze);
+    case -1:
+      return AllowableMoves.p1OrdinaryCanJump(analyze) || AllowableMoves.p1KingCanJump(analyze);
+    case 2:
+      return AllowableMoves.p2OrdinaryCanJump(analyze);
+    case -2:
+      return AllowableMoves.p2OrdinaryCanJump(analyze) || AllowableMoves.p2KingCanJump(analyze);
+    default:
+      return false;
+  }
+};
 
+Game.isGameOver = function(whoseTurn) {
+  let row, col;
   for (row = 0; row < 8; row++) {
     for (col = 0; col < 8; col++ ) {
       if (Math.abs(Game.matrix[row][col]) !== whoseTurn) {
         continue;  // next column
       }
-      var analyze = AllowableMoves.buildAnalyzeMatrix(Game.matrix,row,col);
+      var analyze = AllowableMoves.buildAnalyzeGrid(Game.matrix,row,col);
 
       let canMove = true;
       switch(analyze.x) {
@@ -280,7 +290,10 @@ Game.isGameOver = function(whoseTurn){
       }
     }  // end for col
   }  // end for row
-  return true;  // if we get through both loops without returning, this player is stuck, and game is over
+  // if we get to this point without returning,
+  // this player either has zero pieces or has no moves available
+  // meaning, game is over
+  return true;
 };
 
 module.exports = Game;
@@ -328,7 +341,11 @@ let Player = {
       moveObj.dCol = parseInt(event.target.className.charAt(8));
       let exit_code = Game.doMove(moveObj);
       if (exit_code === 0) { // move was valid
-        Player.whoseTurn = Player.whoseTurn === 1 ? 2 : 1;  // switch players
+        if (Game.moreJumpsAvailable(moveObj.dRow,moveObj.dCol)) {
+          $("#msg").html(`Player ${Player.whoseTurn} keep jumpin'!`);
+        } else {
+          Player.whoseTurn = Player.whoseTurn === 1 ? 2 : 1;  // switch players
+        }
       }
       Player.go();
     });
@@ -336,11 +353,11 @@ let Player = {
   go: function() {
     Display.drawBoard();
     // check for game over:  current player has > 0 pieces and has valid moves?
-    if (!Game.isGameOver(Player.whoseTurn)) {
+    if (Game.isGameOver(Player.whoseTurn)) {
+      $("#whoseTurn").html("Game Over!");
+    } else {
       Player.assignListeners(Player.whoseTurn);
       $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
-    } else {
-      $("#whoseTurn").html("Game Over!");
     }
   }
 };

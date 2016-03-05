@@ -29,9 +29,9 @@ body {
   font-size: 2.2em;
 }
 
-#error {
+#msg {
   position: absolute;
   left: 20;
-  top: 520;
+  top: 500;
   font-size: 2.2em;
 }

@@ -4,8 +4,8 @@
 
 let AllowableMoves = {};
 
-AllowableMoves.buildAnalyzeMatrix = function(matrix,row,col) {
-  // construct 5x5 matrix around piece being analyzed, "X"
+AllowableMoves.buildAnalyzeGrid = function(matrix,row,col) {
+  // construct 5x5 grid around piece being analyzed, "X"
   // C . . . D
   // . A . B .
   // . . X . .
@@ -111,33 +111,33 @@ AllowableMoves.p1OrdinaryCanJump = function(analyze) {
   if ( ( (analyze.a === 2) && (analyze.c === 0) ) ||      // p1 forward jump to C
        ( (analyze.b === 2) && (analyze.d === 0) ) ) {     // p1 forward jump to D
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 AllowableMoves.p1KingCanJump = function(analyze) {
   if ( ( (analyze.e === 2) && (analyze.g === 0) ) ||      // p1 backward jump to G
        ( (analyze.f === 2) && (analyze.h === 0) ) ) {     // p1 backward jump to H
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 AllowableMoves.p2OrdinaryCanJump = function(analyze) {
   if ( ( (analyze.e === 1) && (analyze.g === 0) ) ||      // p2 forward jump to G
        ( (analyze.f === 1) && (analyze.h === 0) ) ) {     // p2 forward jump to H
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 AllowableMoves.p2KingCanJump = function(analyze) {
   if ( ( (analyze.a === 1) && (analyze.c === 0) ) ||      // p2 backward jump to C
        ( (analyze.b === 1) && (analyze.d === 0) ) ) {     // p2 backward jump to D
     return true;
-   } else {
+  } else {
     return false;
-   }
+  }
 };
 
 module.exports = AllowableMoves;

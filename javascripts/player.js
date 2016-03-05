@@ -31,7 +31,11 @@ let Player = {
       moveObj.dCol = parseInt(event.target.className.charAt(8));
       let exit_code = Game.doMove(moveObj);
       if (exit_code === 0) { // move was valid
-        Player.whoseTurn = Player.whoseTurn === 1 ? 2 : 1;  // switch players
+        if (Game.moreJumpsAvailable(moveObj.dRow,moveObj.dCol)) {
+          $("#msg").html(`Player ${Player.whoseTurn} keep jumpin'!`);
+        } else {
+          Player.whoseTurn = Player.whoseTurn === 1 ? 2 : 1;  // switch players
+        }
       }
       Player.go();
     });
@@ -39,11 +43,11 @@ let Player = {
   go: function() {
     Display.drawBoard();
     // check for game over:  current player has > 0 pieces and has valid moves?
-    if (!Game.isGameOver(Player.whoseTurn)) {
+    if (Game.isGameOver(Player.whoseTurn)) {
+      $("#whoseTurn").html("Game Over!");
+    } else {
       Player.assignListeners(Player.whoseTurn);
       $("#whoseTurn").html(`Player ${Player.whoseTurn} go!`);
-    } else {
-      $("#whoseTurn").html("Game Over!");
     }
   }
 };
