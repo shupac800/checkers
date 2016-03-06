@@ -191,9 +191,17 @@ Game.doMove = function(moveObj) {
     // is this piece getting crowned?
     if ((moveObj.player === 1) && (moveObj.dRow === 0)) {
       moveObj.player = -1; // king player 1!
+      $("#msg").html("King me!");
+      Game.matrix[moveObj.oRow][moveObj.oCol] = 0;
+      Game.matrix[moveObj.dRow][moveObj.dCol] = moveObj.player;
+      return 0;  // exit code = valid move; switch players
     }
     if ((moveObj.player === 2) && (moveObj.dRow === 7)) {
       moveObj.player = -2; // king player 2!
+      $("#msg").html("King me!");
+      Game.matrix[moveObj.oRow][moveObj.oCol] = 0;
+      Game.matrix[moveObj.dRow][moveObj.dCol] = moveObj.player;
+      return 0;  // exit code = valid move; switch players
     }
     // move player piece
     Game.matrix[moveObj.oRow][moveObj.oCol] = 0;
