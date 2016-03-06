@@ -58,10 +58,10 @@ AllowableMoves.buildAnalyzeGrid = function(matrix,row,col) {
     analyze.g = 9;  // position is off the board
   }
   try {
-    analyze.g = Math.abs(matrix[row + 2][col + 2]);
+    analyze.h = Math.abs(matrix[row + 2][col + 2]);
   }
   catch(e){
-    analyze.g = 9;  // position is off the board
+    analyze.h = 9;  // position is off the board
   }
   return analyze;
 };
@@ -109,9 +109,9 @@ AllowableMoves.p2King = function(analyze) {
 AllowableMoves.p1OrdinaryCanJump = function(analyze) {
   if ( ( (analyze.a === 2) && (analyze.c === 0) ) ||      // p1 forward jump to C
        ( (analyze.b === 2) && (analyze.d === 0) ) ) {     // p1 forward jump to D
-    return true;
+    return true;  // this piece can jump
   } else {
-    return false;
+    return false;  // this piece can't jump
   }
 };
 AllowableMoves.p1KingCanJump = function(analyze) {
@@ -167,24 +167,22 @@ module.exports = Display;
 },{"./game.js":3}],3:[function(require,module,exports){
 "use strict";
 
-//let Player = require('./player.js');  // for some reason we crash if Player is required here
 let AllowableMoves = require('./allowablemoves.js');
 
 let Game = {};
 
 Game.resetBoard = function() {
-  Game.matrix =   [ [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,2,0,0,0],
+  Game.matrix =   [ [0,2,0,2,0,2,0,2],
+                    [2,0,2,0,2,0,2,0],
+                    [0,2,0,2,0,2,0,2],
                     [0,0,0,0,0,0,0,0],
-                    [0,0,2,0,2,0,0,0],
                     [0,0,0,0,0,0,0,0],
-                    [1,0,2,0,1,0,1,0],
-                    [0,1,0,-1,0,1,0,1],
+                    [1,0,1,0,1,0,1,0],
+                    [0,1,0,1,0,1,0,1],
                     [1,0,1,0,1,0,1,0] ];
 };
 
 Game.doMove = function(moveObj) {
-  console.log("newMatrix",Game.newMatrix);
   // first, validate that moveObj defines a valid move
   let message = Game.validate(moveObj);
   $("#msg").html(message);
@@ -234,7 +232,7 @@ Game.validate = function(moveObj) {
   // ordinary move?
   if ((Math.abs(moveObj.oRow - moveObj.dRow) === 1) && 
       (Math.abs(moveObj.oCol - moveObj.dCol) === 1) ) {
-    return "OK";
+    return "OK!";
   }
   // if move is not expressly permitted, it's forbidden
   return "Unspecified error";
@@ -298,7 +296,6 @@ module.exports = Game;
 
 let Game = require('./game.js');
 let Player = require('./player.js');
-//let Display = require('./display.js');
 
 $("#playAgain").hide();
 Game.resetBoard();
