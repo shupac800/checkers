@@ -1,5 +1,5 @@
 .DS_Store
 lib
 *.zip
-bower_components
 node_modules
+bower_components
