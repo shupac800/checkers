@@ -57,10 +57,10 @@ AllowableMoves.buildAnalyzeGrid = function(matrix,row,col) {
     analyze.g = 9;  // position is off the board
   }
   try {
-    analyze.g = Math.abs(matrix[row + 2][col + 2]);
+    analyze.h = Math.abs(matrix[row + 2][col + 2]);
   }
   catch(e){
-    analyze.g = 9;  // position is off the board
+    analyze.h = 9;  // position is off the board
   }
   return analyze;
 };
@@ -108,9 +108,9 @@ AllowableMoves.p2King = function(analyze) {
 AllowableMoves.p1OrdinaryCanJump = function(analyze) {
   if ( ( (analyze.a === 2) && (analyze.c === 0) ) ||      // p1 forward jump to C
        ( (analyze.b === 2) && (analyze.d === 0) ) ) {     // p1 forward jump to D
-    return true;
+    return true;  // this piece can jump
   } else {
-    return false;
+    return false;  // this piece can't jump
   }
 };
 AllowableMoves.p1KingCanJump = function(analyze) {

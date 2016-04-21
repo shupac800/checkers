@@ -22,18 +22,20 @@ body {
 .col6 {position: absolute; float: left; left: 300}
 .col7 {position: absolute; float: left; left: 350}
 
-#whoseTurn {
+#whoseTurn, #msg {
   position: absolute;
+  font-family: "Varela Round", sans-serif;
+  font-size: 2em;
+  
+}
+#whoseTurn {
   left: 20;
   top: 470;
-  font-size: 2.2em;
 }
 
 #msg {
-  position: absolute;
   left: 20;
   top: 420;
-  font-size: 2.2em;
 }
 
 #playAgain {
